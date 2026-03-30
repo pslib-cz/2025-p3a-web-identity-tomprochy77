@@ -1,15 +1,18 @@
 using CoffeeRecordsIdentity.Data;
 using CoffeeRecordsIdentity.InputModels;
 using CoffeeRecordsIdentity.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Security.Claims;
 
 namespace CoffeeRecordsIdentity.Pages
 {
-    public class CreateModel(ILogger<CreateModel> logger, ApplicationDbContext context) : PageModel
+    [Authorize]
+    public class CreateModel(ILogger<CreateModel> logger, CoffeeRecordsIdentityContext context) : PageModel
     {
         private readonly ILogger<CreateModel> _logger = logger;
-        private readonly ApplicationDbContext _context = context;
+        private readonly CoffeeRecordsIdentityContext _context = context;
 
         [BindProperty]
         public CoffeeCupIM Input { get; set; } = new();
@@ -25,7 +28,9 @@ namespace CoffeeRecordsIdentity.Pages
             {
                 return Page();
             }
-            CoffeeCup cc = new CoffeeCup { MachineNo = Input.MachineNo, UserName = Input.UserName, Created = DateTime.Now };
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            CoffeeCup cc = new CoffeeCup { MachineNo = Input.MachineNo, UserName = Input.UserName, Created = DateTime.Now, UserId = userId };
             _context.Cups.Add(cc);
             await _context.SaveChangesAsync();
             _logger.LogInformation("CoffeeCup created with Id: {CoffeeCupId}", cc.CoffeeCupId);

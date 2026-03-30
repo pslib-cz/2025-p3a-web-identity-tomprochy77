@@ -1,15 +1,23 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CoffeeRecordsIdentity.Models
 {
     public class CoffeeCup
     {
         public int CoffeeCupId { get; set; }
+
         [Display(Name = "Short Name")]
-        public string UserName { get; set; } = String.Empty;
-        //public ApplicationUser UserId { get; set; } // asi?
+        public string UserName { get; set; } = string.Empty;
+
+        public string UserId { get; set; }
+
+        [ForeignKey("UserId")]
+        public ApplicationUser User { get; set; } // asi
+
         [Display(Name = "Time and date")]
         public DateTime Created { get; set; }
+
         [Display(Name = "Id of Machine")]
         public int MachineNo { get; set; }
     }
